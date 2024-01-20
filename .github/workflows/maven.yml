@@ -1,36 +1,28 @@
-name: GitHub Action Java CI/CD with Maven
+name: CICD
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches: [deploy-to-ec2]
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    runs-on: [ubuntu-latest]
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'adopt'
-        cache: maven
-    - name: Build with Maven
-      run: mvn clean install
-
-    - name: Build & push Docker image
-      uses: mr-smithers-excellent/docker-build-push@v3
-      with:
-        image: inbaanbu1998/git_action_project_1
-        tags: latest
-        registry: docker.io
-        dockerfile: Dockerfile
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Checkout source
+        uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Build Project
+        run: mvn clean install -DskipTests
+      - name: Login to docker hub
+        run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
+      - name: Build docker image
+        run: docker build -t inbaanbu1998/git_action_project_1 .
+      - name: Publish image to docker hub
+        run: docker push inbaanbu1998/git_action_project_1:latest
 
   deploy:
     needs: build
@@ -39,6 +31,6 @@ jobs:
       - name: Pull Image from docker hub
         run: docker pull inbaanbu1998/git_action_project_1:latest
       - name: Delete old container
-        run: docker rm -f inbaanbu1998/git_action_project_1-container
+        run: docker rm -f git_action_project_1-container
       - name: Run docker container
-        run: docker run -d -p 8090:8090 --name git_action_project_1-container inbaanbu1998/git_action_project_1
+        run: docker run -d -p 8080:8080 --name git_action_project_1-container inbaanbu1998/git_action_project_1
