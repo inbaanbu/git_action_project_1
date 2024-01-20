@@ -31,3 +31,14 @@ jobs:
         dockerfile: Dockerfile
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+
+  deploy:
+    needs: build
+    runs-on: [aws-ec2]
+    steps:
+      - name: Pull Image from docker hub
+        run: docker pull inbaanbu1998/git_action_project_1:latest
+      - name: Delete old container
+        run: docker rm -f inbaanbu1998/git_action_project_1-container
+      - name: Run docker container
+        run: docker run -d -p 8090:8090 --name git_action_project_1-container inbaanbu1998/git_action_project_1
