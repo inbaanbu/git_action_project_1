@@ -29,8 +29,9 @@ jobs:
     steps:
       - name: Install Docker on the runner
         run: |
-          sudo yum install -y docker
-          sudo systemctl start docker
+          sudo yum update -y
+          sudo yum install docker
+          sudo service docker start
           sudo systemctl enable docker
       - name: Pull Image from Docker Hub
         run: docker pull inbaanbu1998/git_action_project_1:latest
