@@ -26,11 +26,16 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: [aws-ec2]
+    runs-on: ubuntu-latest
     steps:
-      - name: Pull Image from docker hub
-        run: sudo docker pull inbaanbu1998/git_action_project_1:latest
-      - name: Delete old container
-        run: docker rm -f git_action_project_1-container
-      - name: Run docker container
-        run: docker run -d -p 8080:8080 --name git_action_project_1-container inbaanbu1998/git_action_project_1
+      - name: Install Docker on the runner
+        run: |
+          sudo yum install -y docker
+          sudo systemctl start docker
+          sudo systemctl enable docker
+      - name: Pull Image from Docker Hub
+        run: docker pull inbaanbu1998/git_action_project_1:latest
+      - name: Stop and Remove old container (if exists)
+        run: docker stop git_action_project_1-container || true && docker rm git_action_project_1-container || true
+      - name: Run Docker container
+        run: docker run -d -p 8080:8080 --name git_action_project_1-container inbaanbu1998/git_action_project_1:latest
