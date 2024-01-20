@@ -29,7 +29,7 @@ jobs:
     runs-on: [aws-ec2]
     steps:
       - name: Pull Image from docker hub
-        run: docker pull inbaanbu1998/git_action_project_1:latest
+        run: sudo docker pull inbaanbu1998/git_action_project_1:latest
       - name: Delete old container
         run: docker rm -f git_action_project_1-container
       - name: Run docker container
