@@ -15,5 +15,10 @@ public class GitActionProject1Application {
 	public String user() {
 		return "hii inba code is working";
 	}
-
+	
+	@GetMapping("/user/details/user")
+	public String user1() {
+		return "hii inba code is working";
+	
+	}
 }
